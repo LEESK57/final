@@ -54,7 +54,7 @@ resource "aws_ami_from_instance" "final-was-ami" {
 resource "aws_launch_configuration" "final-was-lacf" {
   name                 = "final-was-lacf"
   image_id             = aws_ami_from_instance.final-was-ami.id
-  instance_type        = "t3.small"
+  instance_type        = "t3.medium"
   iam_instance_profile = "admin_role"
   security_groups      = [aws_security_group.final-sg-pri-was.id]
   key_name             = "final-key"
