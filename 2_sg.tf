@@ -24,10 +24,11 @@ resource "aws_security_group" "final-sg-pri-web" {
   description = "final-sg-pri-web"
   vpc_id      = aws_vpc.final-vpc.id
   ingress {
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    security_groups = [aws_security_group.final-sg-pub-bastion.id]
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+    #security_groups = [aws_security_group.final-sg-pub-bastion.id]
+    cidr_blocks = ["0.0.0.0/0"] # 일단 포트 다열어놓음
   }
   ingress {
     from_port   = 80
@@ -52,10 +53,11 @@ resource "aws_security_group" "final-sg-pri-was" {
   description = "final-sg-pri-was"
   vpc_id      = aws_vpc.final-vpc.id
   ingress {
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    security_groups = [aws_security_group.final-sg-pub-bastion.id]
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+    #security_groups = [aws_security_group.final-sg-pub-bastion.id]
+    cidr_blocks = ["0.0.0.0/0"] # 일단 포트 다열어놓음
   }
   ingress {
     from_port   = 8080
