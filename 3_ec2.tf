@@ -40,6 +40,7 @@ resource "aws_instance" "final-ec2-pri-a-web" {
   availability_zone      = "ap-northeast-2a"
   subnet_id              = aws_subnet.final-sub-pub-a.id
   key_name               = "final-key"
+  user_data              = file("./web.sh")
   vpc_security_group_ids = [aws_security_group.final-sg-pri-web.id]
   tags = {
     Name = "final-ec2-pri-a-web"
@@ -69,7 +70,7 @@ resource "aws_instance" "final-ec2-pri-a-was" {
   availability_zone = "ap-northeast-2a"
   subnet_id         = aws_subnet.final-sub-pub-a.id
   key_name          = "final-key"
-  user_data = file("./install.sh")
+  user_data         = file("./install.sh")    # 다시 해야함
   ebs_block_device {
     device_name = "/dev/sdb"
     volume_size = "8"
