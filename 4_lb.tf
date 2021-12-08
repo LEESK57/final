@@ -10,6 +10,10 @@ resource "aws_lb" "final-alb-web" {
   }
 }
 
+output "dns_name" {
+  value = aws_lb.final-alb-web.dns_name
+}
+
 # 타겟그룹 생성 
 resource "aws_lb_target_group" "final-atg-web" {
   name        = "final-atg-web"
@@ -20,6 +24,18 @@ resource "aws_lb_target_group" "final-atg-web" {
   tags = {
     Name = "final-atg-web"
   }
+  health_check {
+    enabled             = true
+    healthy_threshold   = 3
+    interval            = 5
+    matcher             = "200"
+    path                = "/health.html"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 2
+    unhealthy_threshold = 2
+  }
+  
 }
 
 # 리스너 생성 
@@ -39,6 +55,7 @@ resource "aws_lb_target_group_attachment" "final-att-web" {
   target_id        = aws_instance.final-ec2-pri-a-web.id
   port             = 80
 }
+
 /*
 resource "aws_lb_target_group_attachment" "final-att-web2" {
   target_group_arn = aws_lb_target_group.final-atg-web.arn
