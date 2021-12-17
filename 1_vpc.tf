@@ -137,28 +137,35 @@ resource "aws_route_table_association" "final-rtass-pub-c" {
 }
 
 # private web > nat 
-resource "aws_route_table" "final-rt-pri-web" {
+resource "aws_route_table" "final-rt-pri-webwas" {
   vpc_id = aws_vpc.final-vpc.id
   tags = {
     Name = "final-rt-pri-web"
   }
 }
 
-resource "aws_route" "final-r-pri-web" {
-  route_table_id         = aws_route_table.final-rt-pri-web.id
+resource "aws_route" "final-r-pri-webwas" {
+  route_table_id         = aws_route_table.final-rt-pri-webwas.id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.final-ngw.id
 }
 
-# private web subnet을 pirvate route table에 연결 
+# web subnet, was subnet을 pirvate route table에 연결 
 resource "aws_route_table_association" "final-rtass-pri-a-web" {
   subnet_id      = aws_subnet.final-sub-pri-a-web.id
-  route_table_id = aws_route_table.final-rt-pri-web.id
+  route_table_id = aws_route_table.final-rt-pri-webwas.id
 }
 resource "aws_route_table_association" "final-rtass-pri-c-web" {
   subnet_id      = aws_subnet.final-sub-pri-c-web.id
-  route_table_id = aws_route_table.final-rt-pri-web.id
+  route_table_id = aws_route_table.final-rt-pri-webwas.id
 }
 
-
+resource "aws_route_table_association" "final-rtass-pri-a-was" {
+  subnet_id      = aws_subnet.final-sub-pri-a-was.id
+  route_table_id = aws_route_table.final-rt-pri-webwas.id
+}
+resource "aws_route_table_association" "final-rtass-pri-c-was" {
+  subnet_id      = aws_subnet.final-sub-pri-c-was.id
+  route_table_id = aws_route_table.final-rt-pri-webwas.id
+}
 
