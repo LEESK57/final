@@ -63,7 +63,8 @@ resource "aws_security_group" "final-sg-pri-was" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["10.0.10.0/24", "10.0.20.0/24"]
+    #cidr_blocks = ["10.0.10.0/24", "10.0.20.0/24"]
+    cidr_blocks = ["0.0.0.0/0"]  # 일단 포트 다열어놓음
   }
   egress {
     from_port   = 0
