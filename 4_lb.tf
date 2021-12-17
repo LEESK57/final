@@ -10,7 +10,7 @@ resource "aws_lb" "final-alb-web" {
   }
 }
 
-output "dns_name" {
+output "alb-dns_name" {
   value = aws_lb.final-alb-web.dns_name
 }
 
@@ -24,19 +24,21 @@ resource "aws_lb_target_group" "final-atg-web" {
   tags = {
     Name = "final-atg-web"
   }
+  
   health_check {
     enabled             = true
     healthy_threshold   = 3
     interval            = 5
     matcher             = "200"
-    path                = "/health.html"
+    path                = "/"
     port                = "traffic-port"
     protocol            = "HTTP"
     timeout             = 2
     unhealthy_threshold = 2
   }
-  
 }
+
+ 
 
 # 리스너 생성 
 resource "aws_lb_listener" "final-alt-web" {
@@ -48,14 +50,14 @@ resource "aws_lb_listener" "final-alt-web" {
     target_group_arn = aws_lb_target_group.final-atg-web.arn
   }
 }
-
+/*
 # web attachement 
 resource "aws_lb_target_group_attachment" "final-att-web" {
   target_group_arn = aws_lb_target_group.final-atg-web.arn
   target_id        = aws_instance.final-ec2-pri-a-web.id
   port             = 80
 }
-
+*/
 /*
 resource "aws_lb_target_group_attachment" "final-att-web2" {
   target_group_arn = aws_lb_target_group.final-atg-web.arn
@@ -73,6 +75,10 @@ resource "aws_lb" "final-nlb-was" {
   tags = {
     Name = "final-nlb-was"
   }
+}
+
+output "nlb-dns_name" {
+  value = aws_lb.final-nlb-was.dns_name
 }
 
 # 타겟그룹 
@@ -97,11 +103,13 @@ resource "aws_lb_listener" "final-nlt-was" {
     target_group_arn = aws_lb_target_group.final-ntg-was.arn
   }
 }
+/*
 resource "aws_lb_target_group_attachment" "final-ntt-was" {
   target_group_arn = aws_lb_target_group.final-ntg-was.arn
   target_id        = aws_instance.final-ec2-pri-a-was.id
   port             = 8080
 }
+*/
 /*
 resource "aws_lb_target_group_attachment" "final-ntt-was2" {
   target_group_arn = aws_lb_target_group.final-ntg-was.arn
