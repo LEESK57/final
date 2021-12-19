@@ -3,11 +3,19 @@ resource "aws_security_group" "final-sg-pub-bastion" {
   description = "final-sg-pub-bastion"
   vpc_id      = aws_vpc.final-vpc.id
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = 6022
+    to_port     = 6022
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  
+  ingress {
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -24,8 +32,8 @@ resource "aws_security_group" "final-sg-pri-web" {
   description = "final-sg-pri-web"
   vpc_id      = aws_vpc.final-vpc.id
   ingress {
-    from_port = 22
-    to_port   = 22
+    from_port = 6022
+    to_port   = 6022
     protocol  = "tcp"
     #security_groups = [aws_security_group.final-sg-pub-bastion.id]
     cidr_blocks = ["0.0.0.0/0"] # 일단 포트 다열어놓음
@@ -53,8 +61,8 @@ resource "aws_security_group" "final-sg-pri-was" {
   description = "final-sg-pri-was"
   vpc_id      = aws_vpc.final-vpc.id
   ingress {
-    from_port = 22
-    to_port   = 22
+    from_port = 6022
+    to_port   = 6022
     protocol  = "tcp"
     #security_groups = [aws_security_group.final-sg-pub-bastion.id]
     cidr_blocks = ["0.0.0.0/0"] # 일단 포트 다열어놓음
@@ -83,8 +91,8 @@ resource "aws_security_group" "final-sg-pri-db" {
   description = "final-sg-pri-db"
   vpc_id      = aws_vpc.final-vpc.id
   ingress {
-    from_port       = 22
-    to_port         = 22
+    from_port       = 6022
+    to_port         = 6022
     protocol        = "tcp"
     security_groups = [aws_security_group.final-sg-pub-bastion.id]
   }
@@ -111,8 +119,8 @@ resource "aws_security_group" "final-sg-alb-web" {
   description = "final-sg-alb-web"
   vpc_id      = aws_vpc.final-vpc.id
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = 6022
+    to_port     = 6022
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

@@ -21,7 +21,7 @@ resource "aws_ami_from_instance" "final-web-ami" {
 resource "aws_launch_configuration" "final-web-lacf" {
   name                 = "final-web-lacf"
   image_id             = aws_ami_from_instance.final-basiton-ami.id
-  instance_type        = "t2.micro"
+  instance_type        = "t3.micro"
   iam_instance_profile = "admin_role"
   security_groups      = [aws_security_group.final-sg-pri-web.id]
   key_name             = "final-key"
@@ -43,6 +43,8 @@ ProxyPass / http://${aws_lb.final-nlb-was.dns_name}:8080/
 ProxyPassReverse / http://${aws_lb.final-nlb-was.dns_name}:8080/
 A
 systemctl restart httpd
+sed -i "s/#Port 22/Port 6022/g" /etc/ssh/sshd_config
+systemctl restart sshds
 EOF
 }
 
@@ -60,6 +62,20 @@ resource "aws_autoscaling_group" "final-web-atsg" {
     key                 = "Name"
     value               = "final-ec2-web"
     propagate_at_launch = true
+  }
+}
+
+resource "aws_autoscaling_policy" "final-web-tra" {
+  name                   = "final-web-tracking-policy"
+  policy_type            = "TargetTrackingScaling"
+  autoscaling_group_name = aws_autoscaling_group.final-web-atsg.name
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+
+    target_value = "60"
+
   }
 }
 
@@ -105,6 +121,20 @@ resource "aws_autoscaling_group" "final-was-atsg" {
     key                 = "Name"
     value               = "final-ec2-was"
     propagate_at_launch = true
+  }
+}
+
+resource "aws_autoscaling_policy" "final-was-tra" {
+  name                   = "final-was-tracking-policy"
+  policy_type            = "TargetTrackingScaling"
+  autoscaling_group_name = aws_autoscaling_group.final-was-atsg.name
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+
+    target_value = "60"
+
   }
 }
 
