@@ -1,0 +1,27 @@
+---
+- name: petclinic_for_was
+  hosts: tag_Name_final_ec2_was
+  become: true
+  tasks:
+          - name: package install
+            yum:
+                    name:
+                        - git
+                        - mysql
+                    state: latest
+          - name: git
+            shell: git clone https://github.com/SteveKimbespin/petclinic_btc.git /home/ec2-user/petclinic_btc
+            args:
+                    executable: /bin/bash
+          - name: sed delete
+            shell: sudo sed -i '527d' /home/ec2-user/petclinic_btc/pom.xml
+            args:
+                    executable: /bin/bash
+          - name: sed insert
+            shell: sudo sed -i '527 i \                <jdbc.url>jdbc:mysql://mydb.cxyjl4zp2xoc.ap-northeast-2.rds.amazonaws.com/petclinic?useUnicode=true</jdbc.url>' /home/ec2-user/petclinic_btc/pom.xml
+            args:
+                    executable: /bin/bash
+          - name: deploy
+            shell:
+                    cmd: ./mvnw tomcat7:deploy
+                    chdir: /home/ec2-user/petclinic_btc

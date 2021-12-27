@@ -1,0 +1,17 @@
+---
+- name: ebs mount
+  hosts: tag_Name_final_ec2_pub_control
+  become: true
+  tasks:          
+          - name: mkdir ebs
+            file:
+                    path: ~/ebs
+                    state: directory
+          - name: mkfs
+            shell: mkfs.ext4 /dev/sdb
+            args:
+                    executable: /bin/bash
+          - name: mount
+            shell: mount /dev/sdb ~/ebs
+            args:
+                    executable: /bin/bash
