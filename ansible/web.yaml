@@ -1,6 +1,6 @@
 ---
 - name: cloudwatch for web
-  hosts: tag_Name_web
+  hosts: tag_Name_final_ec2_was
   gather_facts: true
   become: true
   tasks:
