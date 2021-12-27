@@ -1,0 +1,115 @@
+---
+- name: cloudwatch for web
+  hosts: tag_Name_web
+  gather_facts: true
+  become: true
+  tasks:
+        - name: mkdir collectd
+          file:
+                path: /usr/share/collectd
+                state: directory
+
+        - name: touch types.db
+          shell:
+                cmd: touch /usr/share/collectd/types.db
+
+        - name: package install
+          yum:
+                    name:
+                        - amazon-cloudwatch-agent
+                    state: latest
+        - name: agent stop
+          command: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a stop
+
+        - name: enter cloudwatch config.json
+          copy:
+                dest: /opt/aws/amazon-cloudwatch-agent/bin/config.json
+                content: |
+                        {
+                            "agent": {
+                                    "metric_collection_interval": 60,
+                                    "run_as_user": "root"
+                            },
+                            "logs": {
+                                    "logs_collected": {
+                                            "files": {
+                                                    "collect_list": [
+                                                            {
+                                                                    "file_path": "/var/log/httpd/access_log",
+                                                                    "log_group_name": "apache2_access",
+                                                                    "log_stream_name": "{instance_id}"
+                                                            },
+                                                            {
+                                                                    "file_path": "/var/log/httpd/error_log",
+                                                                    "log_group_name": "apache2_error",
+                                                                    "log_stream_name": "{instance_id}"
+                                                            }
+                                                    ]
+                                            }
+                                    }
+
+                            },
+                            "metrics":{
+                                    "namespace":"web",
+                                    "append_dimensions": {
+                                                            "AutoScalingGroupName": "${aws:AutoScalingGroupName}",
+                                                            "ImageId": "${aws:ImageId}",
+                                                            "InstanceId": "${aws:InstanceId}",
+                                                            "InstanceType": "${aws:InstanceType}"
+                                    },
+                                    "metrics_collected":{
+                                            "collectd": {
+                                                    "metrics_aggregation_interval": 60
+                                                    },
+                                            "cpu":{
+                                                            "measurement":[
+                                                                    "cpu_usage_idle",
+                                                                    "cpu_usage_iowait",
+                                                                    "cpu_usage_user",
+                                                                    "cpu_usage_system"
+                                                            ],
+                                                            "metrics_collection_interval": 60,
+                                                            "resources": ["*"],
+                                                            "totalcpu": false
+                                            },
+                                            "disk":{
+                                                            "measurement":[
+                                                                    "used_percent",
+                                                                    "disk_free",
+                                                                    "disk_used_percent"
+                                                            ],
+                                                            "metrics_collection_interval": 60,
+                                                            "resources": ["*"]
+                                            },
+                                            "diskio": {
+                                                    "measurement": [
+                                                            "io_time"
+                                                            ],
+                                                            "metrics_collection_interval": 60,
+                                                            "resources": [
+                                                                    "*"
+                                                                    ]
+                                                    },
+                                                     "mem":{
+                                                            "measurement":[
+                                                                    "mem_used_percent",
+                                                                    "mem_free"
+                                                            ],
+                                                            "metrics_collection_interval": 60
+                                            },
+                                            "statsd": {
+                                                    "metrics_aggregation_interval": 60,
+                                                    "metrics_collection_interval": 60,
+                                                    "service_address": ":8125"
+                                            },
+                                            "swap": {
+                                                    "measurement": [
+                                                            "swap_used_percent"
+                                                            ],
+                                                            "metrics_collection_interval": 60
+                                            }
+                                    }
+                            }
+                        }
+        - name: run
+          command: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json
