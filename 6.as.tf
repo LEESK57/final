@@ -32,6 +32,9 @@ yum install httpd -y
 systemctl start httpd
 systemctl status httpd
 systemctl enable httpd
+cat >> /var/www/html/index.html << END
+<html><body><h1>Hello WEB SERVER  </h1></body></html>
+END
 cat >> /etc/httpd/conf/httpd.conf <<A
 ProxyRequests Off
 ProxyPreserveHost On
@@ -39,12 +42,17 @@ ProxyPreserveHost On
 Order deny,allow
 Allow from all
 </Proxy>
-ProxyPass / http://${aws_lb.final-nlb-was.dns_name}:8080/
+ProxyPass /petclinic http://${aws_lb.final-nlb-was.dns_name}:8080/petclinic
 ProxyPassReverse / http://${aws_lb.final-nlb-was.dns_name}:8080/
 A
+
+sed -i 's\CustomLog "logs/access_log" combined\CustomLog "|/usr/sbin/rotatelogs logs/access_log.%y%m%d 86400" combined\g' /etc/httpd/conf/httpd.conf
+sed -i 's\ErrorLog "logs/error_log"\ErrorLog "|/usr/sbin/rotatelogs logs/error_log.%y%m%d 86400"\g' /etc/httpd/conf/httpd.conf
 systemctl restart httpd
 sed -i "s/#Port 22/Port 6022/g" /etc/ssh/sshd_config
-systemctl restart sshds
+systemctl restart sshd
+rm -f /etc/localtime 
+ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 EOF
 }
 

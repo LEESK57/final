@@ -168,4 +168,3 @@ resource "aws_route_table_association" "final-rtass-pri-c-was" {
   subnet_id      = aws_subnet.final-sub-pri-c-was.id
   route_table_id = aws_route_table.final-rt-pri-webwas.id
 }
-

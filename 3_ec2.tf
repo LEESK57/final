@@ -18,13 +18,14 @@ data "aws_ami" "amzn" {
 resource "aws_instance" "final-ec2-pub-bastion" {
   ami                    = data.aws_ami.amzn.id
   instance_type          = "t3.micro"
+  iam_instance_profile = "admin_role"
   availability_zone      = "ap-northeast-2a"
   private_ip             = "10.0.1.10"
   subnet_id              = aws_subnet.final-sub-pub-a.id
   key_name               = "final-key"
   user_data              = file("./bastion.sh")
 
-  vpc_security_group_ids = [aws_security_group.final-sg-pub-bastion.id]
+  vpc_security_group_ids = [aws_security_group.final-sg-pub-main.id]
   tags = {
     Name = "final-ec2-pub-bastion"
   }
@@ -45,12 +46,13 @@ output "public_ip" {
 resource "aws_instance" "final-ec2-pub-control" {
   ami                    = data.aws_ami.amzn.id
   instance_type          = "t3.micro"
+  iam_instance_profile = "admin_role"
   availability_zone      = "ap-northeast-2c"
   private_ip             = "10.0.2.10"
   subnet_id              = aws_subnet.final-sub-pub-c.id
   key_name               = "final-key"
   user_data              = file("./ansible.sh")
-  vpc_security_group_ids = [aws_security_group.final-sg-pub-bastion.id]
+  vpc_security_group_ids = [aws_security_group.final-sg-pub-main.id]
   tags = {
     Name = "final-ec2-pub-control"
   }

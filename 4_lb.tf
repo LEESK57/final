@@ -5,6 +5,11 @@ resource "aws_lb" "final-alb-web" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.final-sg-alb-web.id]                       # alb는 sg 필요 
   subnets            = [aws_subnet.final-sub-pub-a.id, aws_subnet.final-sub-pub-c.id] # public subnet에서 web 통신 
+  access_logs {
+    bucket  = "final009-bucket"
+    prefix  = "log-lb"
+    enabled = true
+  }
   tags = {
     Name = "final-alb-web"
   }
@@ -38,8 +43,6 @@ resource "aws_lb_target_group" "final-atg-web" {
   }
 }
 
- 
-
 # 리스너 생성 
 resource "aws_lb_listener" "final-alt-web" {
   load_balancer_arn = aws_lb.final-alb-web.arn
@@ -50,21 +53,6 @@ resource "aws_lb_listener" "final-alt-web" {
     target_group_arn = aws_lb_target_group.final-atg-web.arn
   }
 }
-/*
-# web attachement 
-resource "aws_lb_target_group_attachment" "final-att-web" {
-  target_group_arn = aws_lb_target_group.final-atg-web.arn
-  target_id        = aws_instance.final-ec2-pri-a-web.id
-  port             = 80
-}
-*/
-/*
-resource "aws_lb_target_group_attachment" "final-att-web2" {
-  target_group_arn = aws_lb_target_group.final-atg-web.arn
-  target_id        = aws_instance.final-ec2-pri-c-web2.id
-  port             = 80
-}
-*/
 
 # nlb 생성 
 resource "aws_lb" "final-nlb-was" {
@@ -103,17 +91,3 @@ resource "aws_lb_listener" "final-nlt-was" {
     target_group_arn = aws_lb_target_group.final-ntg-was.arn
   }
 }
-/*
-resource "aws_lb_target_group_attachment" "final-ntt-was" {
-  target_group_arn = aws_lb_target_group.final-ntg-was.arn
-  target_id        = aws_instance.final-ec2-pri-a-was.id
-  port             = 8080
-}
-*/
-/*
-resource "aws_lb_target_group_attachment" "final-ntt-was2" {
-  target_group_arn = aws_lb_target_group.final-ntg-was.arn
-  target_id        = aws_instance.final-ec2-pri-c-was2.id
-  port             = 8080
-}
-*/
