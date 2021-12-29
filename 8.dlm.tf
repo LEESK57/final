@@ -53,7 +53,7 @@ EOF
 resource "aws_dlm_lifecycle_policy" "final-dlm-policy" {
   description        = "final DLM lifecycle policy"
   execution_role_arn = aws_iam_role.dlm_lifecycle_role.arn
-  state              = "DISABLED" #생성 또는 수정 직후 정책을 활성화할지 여부를 지정
+  state              = "ENABLED" #생성 또는 수정 직후 정책을 활성화할지 여부를 지정
 
   policy_details {
     resource_types = ["VOLUME"]
