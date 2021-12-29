@@ -13,15 +13,19 @@
             shell: git clone https://github.com/SteveKimbespin/petclinic_btc.git /home/ec2-user/petclinic_btc
             args:
                     executable: /bin/bash
+          - name: deploy
+            shell:
+                    cmd: ./mvnw tomcat7:deploy
+                    chdir: /home/ec2-user/petclinic_btc
           - name: sed delete
             shell: sudo sed -i '527d' /home/ec2-user/petclinic_btc/pom.xml
             args:
                     executable: /bin/bash
           - name: sed insert
-            shell: sudo sed -i '527 i \                <jdbc.url>jdbc:mysql://mydb.cxyjl4zp2xoc.ap-northeast-2.rds.amazonaws.com/petclinic?useUnicode=true</jdbc.url>' /home/ec2-user/petclinic_btc/pom.xml
+            shell: sudo sed -i '527 i \                <jdbc.url>jdbc:mysql://mydb.c0mhdt1llyxw.ap-northeast-2.rds.amazonaws.com/petclinic?useUnicode=true</jdbc.url>' /home/ec2-user/petclinic_btc/pom.xml
             args:
                     executable: /bin/bash
-          - name: deploy
+          - name: redeploy
             shell:
-                    cmd: ./mvnw tomcat7:deploy
+                    cmd: ./mvnw tomcat7:redeploy -P MySQL
                     chdir: /home/ec2-user/petclinic_btc
