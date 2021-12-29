@@ -10,3 +10,5 @@ resource "aws_volume_attachment" "final-ebs-volume" {
     volume_id   = "${aws_ebs_volume.final-ebs-volume.id}"
     instance_id = "${aws_instance.final-ec2-pub-control.id}"
   }
+
+  
