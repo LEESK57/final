@@ -6,7 +6,7 @@ resource "aws_s3_access_point" "final009" {
   bucket = "final009-bucket"
   name   = "final009"
 
-  # VPC must be specified for S3 on Outposts
+  # VPC must be specified for S3 on Outpost
   vpc_configuration {
     vpc_id = aws_vpc.final-vpc.id
   }
